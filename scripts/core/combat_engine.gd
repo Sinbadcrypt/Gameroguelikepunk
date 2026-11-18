@@ -173,6 +173,77 @@ func place(uid: int, slot: int) -> bool:
 	return true
 
 
+## Case libre la plus proche de `slot` (à droite d'abord), ou -1.
+func _nearest_free(slot: int) -> int:
+	var n: int = state["slots"].size()
+	for d in range(1, n):
+		for s in [slot + d, slot - d]:
+			if s >= 0 and s < n and state["slots"][s] == null:
+				return s
+	return -1
+
+
+## Peut-on insérer la carte (de la main) en `slot` ? "" si oui, sinon la raison.
+## Case occupée + une case libre ailleurs : les cartes se décalent (insertion).
+## Case occupée et Script plein : la carte remplace l'ancienne, qui retourne en main.
+func can_insert(uid: int, slot: int) -> String:
+	if slot < 0 or slot >= state["slots"].size():
+		return "Case invalide"
+	if state["slots"][slot] == null or _nearest_free(slot) < 0:
+		return can_place(uid, slot)
+	var card = _find_in(state["hand"], uid)
+	if card == null:
+		return "Carte absente de la main"
+	var def := def_of(card)
+	if int(def["cost"]) > energy_left():
+		return "Pas assez d'énergie"
+	if def.get("unique_in_script", false):
+		for other in state["slots"]:
+			if other != null and other["id"] == card["id"]:
+				return "Max 1 %s par Script" % def["name"]
+	return ""
+
+
+func insert(uid: int, slot: int) -> bool:
+	if can_insert(uid, slot) != "":
+		return false
+	if state["slots"][slot] != null:
+		var free := _nearest_free(slot)
+		if free >= 0:
+			# Décale les cartes entre `slot` et la case libre, vers la case libre.
+			var step := 1 if free > slot else -1
+			var i := free
+			while i != slot:
+				state["slots"][i] = state["slots"][i - step]
+				i -= step
+			state["slots"][slot] = null
+	return place(uid, slot)
+
+
+## Déplace une carte du Script vers une autre case (échange si la case est occupée).
+func move_slot(from_slot: int, to_slot: int) -> void:
+	swap_slots(from_slot, to_slot)
+
+
+## Aperçu d'une action hypothétique (pendant un glisser) sans toucher à la partie.
+## action : {"uid", "from_slot", "to_slot"} ; to_slot = -1 pour "retour en main".
+func preview_if(action: Dictionary) -> Dictionary:
+	var saved := state
+	state = state.duplicate(true)
+	var from_slot: int = action["from_slot"]
+	var to_slot: int = action["to_slot"]
+	if to_slot < 0:
+		if from_slot >= 0:
+			unplace(from_slot)
+	elif from_slot >= 0:
+		move_slot(from_slot, to_slot)
+	else:
+		insert(action["uid"], to_slot)
+	var pv := preview()
+	state = saved
+	return pv
+
+
 ## Première case libre, ou -1.
 func first_free_slot() -> int:
 	for i in state["slots"].size():
@@ -298,7 +369,11 @@ func preview() -> Dictionary:
 	var linked: Array = []
 	for i in before["slots"].size():
 		linked.append(is_linked(i))
+	var symbols: Array = []
+	for c in before["slots"]:
+		symbols.append(def_of(c)["symbol"] if c != null else "")
 	return {
+		"symbols": symbols,
 		"enemies": enemies,
 		"shield": after["player"]["shield"] - before["player"]["shield"],
 		"heat": after["player"]["heat"] - before["player"]["heat"],

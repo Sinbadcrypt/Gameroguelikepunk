@@ -1,72 +1,412 @@
 {
-  "_doc": "Banque de cartes. symbol: intrusion | chaleur | brouillage. effects = effets de base ; link = { symbol, effects } : effets utilisés À LA PLACE des effets de base si la carte précédente du Script porte ce symbole (ou est une Injection). Les montants sont un entier ou une valeur dynamique { stat, mult, div, add } (voir scripts/core/combat_engine.gd). Dans text : {I} {C} {B} = symboles colorés.",
+  "_doc": "Banque de cartes. symbol: intrusion | chaleur | brouillage. effects = effets de base ; link = { symbol, effects } : effets utilisés À LA PLACE des effets de base si la carte précédente du Script porte ce symbole (ou est une Injection). Les montants sont un entier ou une valeur dynamique { stat, mult, div, add } (voir scripts/core/combat_engine.gd). Dans text : {I} {C} {B} = symboles colorés. short / short_link = résumé court affiché sur la carte (le texte complet s'affiche quand on maintient ou soulève la carte).",
   "cards": [
-    { "id": "exploit", "name": "Exploit", "cost": 1, "symbol": "intrusion", "rarity": "starter",
-      "effects": [ { "type": "damage", "amount": 6 } ],
-      "text": "6 dégâts." },
-    { "id": "blindage", "name": "Blindage", "cost": 1, "symbol": "brouillage", "rarity": "starter",
-      "effects": [ { "type": "shield", "amount": 5 } ],
-      "text": "5 Bouclier." },
-    { "id": "prechauffe", "name": "Préchauffe", "cost": 1, "symbol": "chaleur", "rarity": "starter",
-      "effects": [ { "type": "heat", "amount": 2 } ],
-      "link": { "symbol": "intrusion", "effects": [ { "type": "heat", "amount": 3 } ] },
-      "text": "+2 Chaleur.\nLien {I} : +3 à la place." },
-
-    { "id": "force_brute", "name": "Force brute", "cost": 1, "symbol": "intrusion", "rarity": "common",
-      "effects": [ { "type": "damage", "amount": 5 } ],
-      "link": { "symbol": "intrusion", "effects": [ { "type": "damage", "amount": 9 } ] },
-      "text": "5 dégâts.\nLien {I} : 9 dégâts." },
-    { "id": "ping", "name": "Ping", "cost": 0, "symbol": "intrusion", "rarity": "common",
-      "effects": [ { "type": "damage", "amount": 3 } ],
-      "link": { "symbol": "brouillage", "effects": [ { "type": "damage", "amount": 3 }, { "type": "draw_next", "amount": 1 } ] },
-      "text": "3 dégâts.\nLien {B} : +1 carte au prochain tour." },
-    { "id": "rafale", "name": "Rafale de paquets", "cost": 1, "symbol": "intrusion", "rarity": "uncommon",
-      "effects": [ { "type": "damage", "amount": { "stat": "intrusion_before", "mult": 3, "add": 3 } } ],
-      "text": "3 dégâts, +3 par carte {I} placée avant elle." },
-    { "id": "onde_emp", "name": "Onde EMP", "cost": 1, "symbol": "intrusion", "rarity": "uncommon",
-      "effects": [ { "type": "damage", "amount": 4, "target": "all" } ],
-      "link": { "symbol": "chaleur", "effects": [ { "type": "damage", "amount": { "stat": "heat", "div": 2, "add": 4 }, "target": "all" } ] },
-      "text": "4 dégâts à tous.\nLien {C} : + moitié de ta Chaleur." },
-    { "id": "rootkit", "name": "Rootkit", "cost": 1, "symbol": "intrusion", "rarity": "rare", "exhaust": true,
-      "effects": [ { "type": "power", "power": "rootkit", "amount": 2 } ],
-      "text": "Jusqu'à la fin du combat, chaque Lien {I} activé inflige +2 dégâts. Épuise." },
-
-    { "id": "overclock", "name": "Overclock", "cost": 1, "symbol": "chaleur", "rarity": "common",
-      "effects": [ { "type": "heat", "amount": 3 } ],
-      "link": { "symbol": "chaleur", "effects": [ { "type": "heat", "amount": 5 } ] },
-      "text": "+3 Chaleur.\nLien {C} : +5 à la place." },
-    { "id": "decharge", "name": "Décharge", "cost": 1, "symbol": "chaleur", "rarity": "common",
-      "effects": [ { "type": "damage", "amount": { "stat": "heat" } }, { "type": "heat_half" } ],
-      "link": { "symbol": "intrusion", "effects": [ { "type": "damage", "amount": { "stat": "heat" } } ] },
-      "text": "Dégâts = ta Chaleur, puis Chaleur ÷ 2.\nLien {I} : la Chaleur reste." },
-    { "id": "dissipateur", "name": "Dissipateur", "cost": 1, "symbol": "chaleur", "rarity": "uncommon",
-      "effects": [ { "type": "shield", "amount": { "stat": "heat", "div": 2, "add": 4 } } ],
-      "link": { "symbol": "brouillage", "effects": [ { "type": "shield", "amount": { "stat": "heat", "div": 2, "add": 4 } }, { "type": "heat", "amount": 2 } ] },
-      "text": "4 Bouclier + moitié de ta Chaleur.\nLien {B} : +2 Chaleur." },
-    { "id": "purge", "name": "Purge thermique", "cost": 0, "symbol": "chaleur", "rarity": "uncommon",
-      "effects": [ { "type": "heat", "amount": -4 }, { "type": "draw_next", "amount": 2 } ],
-      "text": "−4 Chaleur.\n+2 cartes au prochain tour." },
-    { "id": "fusion", "name": "Fusion du cœur", "cost": 2, "symbol": "chaleur", "rarity": "rare",
-      "effects": [ { "type": "damage", "amount": { "stat": "heat", "mult": 2 }, "target": "all" }, { "type": "set_heat", "amount": 0 } ],
-      "text": "Dégâts = 2 × ta Chaleur à tous. Chaleur à 0." },
-
-    { "id": "pare_feu", "name": "Pare-feu", "cost": 1, "symbol": "brouillage", "rarity": "common",
-      "effects": [ { "type": "shield", "amount": 6 } ],
-      "link": { "symbol": "brouillage", "effects": [ { "type": "shield", "amount": 9 } ] },
-      "text": "6 Bouclier.\nLien {B} : 9 Bouclier." },
-    { "id": "brouilleur", "name": "Brouilleur", "cost": 1, "symbol": "brouillage", "rarity": "common",
-      "effects": [ { "type": "jam", "amount": 6 } ],
-      "link": { "symbol": "intrusion", "effects": [ { "type": "jam", "amount": 6 }, { "type": "damage", "amount": 4 } ] },
-      "text": "Brouillé 6.\nLien {I} : + 4 dégâts." },
-    { "id": "injection", "name": "Injection", "cost": 0, "symbol": "brouillage", "rarity": "uncommon",
-      "grants_link": true, "unique_in_script": true,
+    {
+      "id": "exploit",
+      "name": "Exploit",
+      "cost": 1,
+      "symbol": "intrusion",
+      "rarity": "starter",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 6
+        }
+      ],
+      "text": "6 dégâts.",
+      "short": "6 DÉG"
+    },
+    {
+      "id": "blindage",
+      "name": "Blindage",
+      "cost": 1,
+      "symbol": "brouillage",
+      "rarity": "starter",
+      "effects": [
+        {
+          "type": "shield",
+          "amount": 5
+        }
+      ],
+      "text": "5 Bouclier.",
+      "short": "5 BOUCLIER"
+    },
+    {
+      "id": "prechauffe",
+      "name": "Préchauffe",
+      "cost": 1,
+      "symbol": "chaleur",
+      "rarity": "starter",
+      "effects": [
+        {
+          "type": "heat",
+          "amount": 2
+        }
+      ],
+      "link": {
+        "symbol": "intrusion",
+        "effects": [
+          {
+            "type": "heat",
+            "amount": 3
+          }
+        ]
+      },
+      "text": "+2 Chaleur.\nLien {I} : +3 à la place.",
+      "short": "+2 CHALEUR",
+      "short_link": "+3 CHALEUR"
+    },
+    {
+      "id": "force_brute",
+      "name": "Force brute",
+      "cost": 1,
+      "symbol": "intrusion",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 5
+        }
+      ],
+      "link": {
+        "symbol": "intrusion",
+        "effects": [
+          {
+            "type": "damage",
+            "amount": 9
+          }
+        ]
+      },
+      "text": "5 dégâts.\nLien {I} : 9 dégâts.",
+      "short": "5 DÉG",
+      "short_link": "9 DÉG"
+    },
+    {
+      "id": "ping",
+      "name": "Ping",
+      "cost": 0,
+      "symbol": "intrusion",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 3
+        }
+      ],
+      "link": {
+        "symbol": "brouillage",
+        "effects": [
+          {
+            "type": "damage",
+            "amount": 3
+          },
+          {
+            "type": "draw_next",
+            "amount": 1
+          }
+        ]
+      },
+      "text": "3 dégâts.\nLien {B} : +1 carte au prochain tour.",
+      "short": "3 DÉG",
+      "short_link": "+1 CARTE"
+    },
+    {
+      "id": "rafale",
+      "name": "Rafale de paquets",
+      "cost": 1,
+      "symbol": "intrusion",
+      "rarity": "uncommon",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": {
+            "stat": "intrusion_before",
+            "mult": 3,
+            "add": 3
+          }
+        }
+      ],
+      "text": "3 dégâts, +3 par carte {I} placée avant elle.",
+      "short": "3 DÉG\n+3 / {I} avant"
+    },
+    {
+      "id": "onde_emp",
+      "name": "Onde EMP",
+      "cost": 1,
+      "symbol": "intrusion",
+      "rarity": "uncommon",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": 4,
+          "target": "all"
+        }
+      ],
+      "link": {
+        "symbol": "chaleur",
+        "effects": [
+          {
+            "type": "damage",
+            "amount": {
+              "stat": "heat",
+              "div": 2,
+              "add": 4
+            },
+            "target": "all"
+          }
+        ]
+      },
+      "text": "4 dégâts à tous.\nLien {C} : + moitié de ta Chaleur.",
+      "short": "4 DÉG TOUS",
+      "short_link": "+½ CHALEUR"
+    },
+    {
+      "id": "rootkit",
+      "name": "Rootkit",
+      "cost": 1,
+      "symbol": "intrusion",
+      "rarity": "rare",
+      "exhaust": true,
+      "effects": [
+        {
+          "type": "power",
+          "power": "rootkit",
+          "amount": 2
+        }
+      ],
+      "text": "Jusqu'à la fin du combat, chaque Lien {I} activé inflige +2 dégâts. Épuise.",
+      "short": "LIEN {I} : +2 DÉG\nTOUT LE COMBAT"
+    },
+    {
+      "id": "overclock",
+      "name": "Overclock",
+      "cost": 1,
+      "symbol": "chaleur",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "heat",
+          "amount": 3
+        }
+      ],
+      "link": {
+        "symbol": "chaleur",
+        "effects": [
+          {
+            "type": "heat",
+            "amount": 5
+          }
+        ]
+      },
+      "text": "+3 Chaleur.\nLien {C} : +5 à la place.",
+      "short": "+3 CHALEUR",
+      "short_link": "+5 CHALEUR"
+    },
+    {
+      "id": "decharge",
+      "name": "Décharge",
+      "cost": 1,
+      "symbol": "chaleur",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": {
+            "stat": "heat"
+          }
+        },
+        {
+          "type": "heat_half"
+        }
+      ],
+      "link": {
+        "symbol": "intrusion",
+        "effects": [
+          {
+            "type": "damage",
+            "amount": {
+              "stat": "heat"
+            }
+          }
+        ]
+      },
+      "text": "Dégâts = ta Chaleur, puis Chaleur ÷ 2.\nLien {I} : la Chaleur reste.",
+      "short": "DÉG = CHALEUR\nCHALEUR ÷2",
+      "short_link": "GARDE LA CHALEUR"
+    },
+    {
+      "id": "dissipateur",
+      "name": "Dissipateur",
+      "cost": 1,
+      "symbol": "chaleur",
+      "rarity": "uncommon",
+      "effects": [
+        {
+          "type": "shield",
+          "amount": {
+            "stat": "heat",
+            "div": 2,
+            "add": 4
+          }
+        }
+      ],
+      "link": {
+        "symbol": "brouillage",
+        "effects": [
+          {
+            "type": "shield",
+            "amount": {
+              "stat": "heat",
+              "div": 2,
+              "add": 4
+            }
+          },
+          {
+            "type": "heat",
+            "amount": 2
+          }
+        ]
+      },
+      "text": "4 Bouclier + moitié de ta Chaleur.\nLien {B} : +2 Chaleur.",
+      "short": "4 + ½ CHALEUR\nBOUCLIER",
+      "short_link": "+2 CHALEUR"
+    },
+    {
+      "id": "purge",
+      "name": "Purge thermique",
+      "cost": 0,
+      "symbol": "chaleur",
+      "rarity": "uncommon",
+      "effects": [
+        {
+          "type": "heat",
+          "amount": -4
+        },
+        {
+          "type": "draw_next",
+          "amount": 2
+        }
+      ],
+      "text": "−4 Chaleur.\n+2 cartes au prochain tour.",
+      "short": "−4 CHALEUR\n+2 CARTES"
+    },
+    {
+      "id": "fusion",
+      "name": "Fusion du cœur",
+      "cost": 2,
+      "symbol": "chaleur",
+      "rarity": "rare",
+      "effects": [
+        {
+          "type": "damage",
+          "amount": {
+            "stat": "heat",
+            "mult": 2
+          },
+          "target": "all"
+        },
+        {
+          "type": "set_heat",
+          "amount": 0
+        }
+      ],
+      "text": "Dégâts = 2 × ta Chaleur à tous. Chaleur à 0.",
+      "short": "2×CHALEUR TOUS\nCHALEUR → 0"
+    },
+    {
+      "id": "pare_feu",
+      "name": "Pare-feu",
+      "cost": 1,
+      "symbol": "brouillage",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "shield",
+          "amount": 6
+        }
+      ],
+      "link": {
+        "symbol": "brouillage",
+        "effects": [
+          {
+            "type": "shield",
+            "amount": 9
+          }
+        ]
+      },
+      "text": "6 Bouclier.\nLien {B} : 9 Bouclier.",
+      "short": "6 BOUCLIER",
+      "short_link": "9 BOUCLIER"
+    },
+    {
+      "id": "brouilleur",
+      "name": "Brouilleur",
+      "cost": 1,
+      "symbol": "brouillage",
+      "rarity": "common",
+      "effects": [
+        {
+          "type": "jam",
+          "amount": 6
+        }
+      ],
+      "link": {
+        "symbol": "intrusion",
+        "effects": [
+          {
+            "type": "jam",
+            "amount": 6
+          },
+          {
+            "type": "damage",
+            "amount": 4
+          }
+        ]
+      },
+      "text": "Brouillé 6.\nLien {I} : + 4 dégâts.",
+      "short": "BROUILLÉ 6",
+      "short_link": "+4 DÉG"
+    },
+    {
+      "id": "injection",
+      "name": "Injection",
+      "cost": 0,
+      "symbol": "brouillage",
+      "rarity": "uncommon",
+      "grants_link": true,
+      "unique_in_script": true,
       "effects": [],
-      "text": "La carte suivante active son Lien.\nMax 1 par Script." },
-    { "id": "gel", "name": "Gel de processus", "cost": 2, "symbol": "brouillage", "rarity": "uncommon", "exhaust": true,
-      "effects": [ { "type": "skip_intent" } ],
-      "text": "La cible saute sa prochaine intention. Épuise." },
-    { "id": "contre_mesure", "name": "Contre-mesure", "cost": 2, "symbol": "brouillage", "rarity": "rare",
-      "effects": [ { "type": "reflect" } ],
-      "text": "Ce tour, les dégâts bloqués par ton Bouclier sont renvoyés." }
+      "text": "La carte suivante active son Lien.\nMax 1 par Script.",
+      "short": "ACTIVE LE LIEN\nSUIVANT"
+    },
+    {
+      "id": "gel",
+      "name": "Gel de processus",
+      "cost": 2,
+      "symbol": "brouillage",
+      "rarity": "uncommon",
+      "exhaust": true,
+      "effects": [
+        {
+          "type": "skip_intent"
+        }
+      ],
+      "text": "La cible saute sa prochaine intention. Épuise.",
+      "short": "CIBLE GELÉE\n1 TOUR"
+    },
+    {
+      "id": "contre_mesure",
+      "name": "Contre-mesure",
+      "cost": 2,
+      "symbol": "brouillage",
+      "rarity": "rare",
+      "effects": [
+        {
+          "type": "reflect"
+        }
+      ],
+      "text": "Ce tour, les dégâts bloqués par ton Bouclier sont renvoyés.",
+      "short": "RENVOIE LES\nDÉG BLOQUÉS"
+    }
   ]
 }

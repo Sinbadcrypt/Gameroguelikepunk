@@ -2,22 +2,38 @@
 class_name Palette
 extends RefCounted
 
-const BG := Color("#0b0d17")
-const PANEL := Color("#161a2b")
-const PANEL_LIGHT := Color("#22284a")
-const TEXT := Color("#e8ecff")
-const TEXT_DIM := Color("#8a93b8")
-const DAMAGE := Color("#ff4d6d")
-const SHIELD := Color("#5ec8ff")
-const HEAT := Color("#ff9a2e")
-const HEAL := Color("#7dff9a")
+# Direction artistique "Terminal netrunner" : fond noir bleuté, 3 couleurs vives (une par symbole).
+const BG := Color("#07090f")
+const PANEL := Color("#0e1422")
+const PANEL_LIGHT := Color("#1e2a44")
+const TEXT := Color("#c8f7ff")
+const TEXT_DIM := Color("#5e6b8c")
+const DAMAGE := Color("#ff3b3b")
+const SHIELD := Color("#2ee6ff")
+const HEAT := Color("#ffb020")
+const HEAL := Color("#3dffa8")
 const ENERGY := Color("#ffe066")
 
 const SYMBOL_COLORS := {
-	"intrusion": Color("#ff3d7f"),
-	"chaleur": Color("#ff9a2e"),
+	"intrusion": Color("#ff2e88"),
+	"chaleur": Color("#ffb020"),
 	"brouillage": Color("#2ee6ff"),
 }
+
+# Polices : Rajdhani (titres et texte, condensée) et JetBrains Mono (chiffres).
+# JetBrains Mono sert aussi de secours pour les caractères absents de Rajdhani (½, →…).
+static var _fonts := {}
+
+
+static func font(kind: String) -> Font:
+	if _fonts.is_empty():
+		var mono: FontFile = load("res://assets/fonts/JetBrainsMono-Bold.ttf")
+		var ui: FontFile = load("res://assets/fonts/Rajdhani-SemiBold.ttf")
+		var title: FontFile = load("res://assets/fonts/Rajdhani-Bold.ttf")
+		ui.fallbacks = [mono]
+		title.fallbacks = [mono]
+		_fonts = {"mono": mono, "ui": ui, "title": title}
+	return _fonts[kind]
 const SYMBOL_NAMES := {
 	"intrusion": "Intrusion",
 	"chaleur": "Chaleur",
@@ -60,8 +76,8 @@ static func intent_text(actions: Array, jam: int) -> String:
 				var dmg: int = max(0, int(a["amount"]) - jam_left)
 				jam_left = 0
 				var hits := int(a.get("hits", 1))
-				var s := "[color=#%s]Attaque %d%s[/color]" % [DAMAGE.to_html(false), dmg, ("×%d" % hits) if hits > 1 else ""]
+				var s := "[color=#%s]ATTAQUE %d%s[/color]" % [DAMAGE.to_html(false), dmg, ("×%d" % hits) if hits > 1 else ""]
 				parts.append(s)
 			"shield":
-				parts.append("[color=#%s]Bouclier %d[/color]" % [SHIELD.to_html(false), int(a["amount"])])
+				parts.append("[color=#%s]BOUCLIER %d[/color]" % [SHIELD.to_html(false), int(a["amount"])])
 	return " + ".join(parts)

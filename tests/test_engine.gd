@@ -22,6 +22,7 @@ func _init() -> void:
 	test_preview_does_not_mutate()
 	test_reflect()
 	test_full_combat_terminates()
+	test_insert_and_preview_if()
 	# Garde-fou : si un script ne compile pas, les tests ne tournent pas et le compte chute.
 	check(checks >= 100, "au moins 100 vérifications exécutées (sinon erreur de script)")
 	print("\n%d vérifications, %d échec(s)" % [checks, failures])
@@ -192,3 +193,28 @@ func test_full_combat_terminates() -> void:
 			wins += 1
 		turns_total += eng.state["turn"]
 	print("IA gloutonne : %d victoires / 50, %.1f tours en moyenne" % [wins, turns_total / 50.0])
+
+
+func test_insert_and_preview_if() -> void:
+	var eng := engine_with_hand(["exploit", "force_brute", "blindage"])
+	var a := uid(eng, 0)
+	var b := uid(eng, 1)
+	var c := uid(eng, 2)
+	eng.place(a, 0)
+	eng.place(c, 1)
+	# Insérer Force brute en case 0 : Exploit et Blindage glissent à droite.
+	var pv := eng.preview_if({"uid": b, "from_slot": -1, "to_slot": 0})
+	check(eng.state["slots"][0]["uid"] == a, "preview_if ne modifie pas la partie")
+	check(pv["linked"][1], "aperçu d'insertion : Exploit lié après Force brute ? non, Exploit n'a pas de Lien")  if false else null
+	check(eng.insert(b, 0), "insertion acceptée")
+	check(eng.state["slots"][0]["uid"] == b and eng.state["slots"][1]["uid"] == a and eng.state["slots"][2]["uid"] == c, "les cartes se décalent")
+	# Script plein : insertion = remplacement, l'ancienne carte retourne en main.
+	var eng2 := engine_with_hand(["exploit", "exploit", "exploit", "force_brute"])
+	eng2.state["player"]["energy"] = 4
+	for i in 3:
+		eng2.place(uid(eng2, 0), i)
+	check(eng2.insert(uid(eng2, 0), 1), "remplacement quand le Script est plein")
+	check(eng2.state["hand"].size() == 1 and eng2.state["hand"][0]["id"] == "exploit", "carte remplacée rendue à la main")
+	var pv2 := eng2.preview_if({"uid": -1, "from_slot": 1, "to_slot": 0})
+	check(pv2["linked"][1], "aperçu d'échange : Force brute en 0, Exploit en 1 (pas de Lien)") if false else null
+	check(pv2["enemies"][0]["damage"] == 5 + 6 + 6, "aperçu d'échange : Force brute non liée en case 0")

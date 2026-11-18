@@ -1,0 +1,33 @@
+; Fichier de configuration du projet Godot 4.
+config_version=5
+
+[application]
+
+config/name="Script"
+config/description="Roguelike deck builder cyberpunk - vertical slice (1 combat)"
+run/main_scene="res://scenes/combat.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+
+[display]
+
+; Portrait 9:16. Sur PC, fenêtre redimensionnable à 450x800.
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/size/window_width_override=450
+window/size/window_height_override=800
+window/size/resizable=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=1
+
+[input_devices]
+
+; Le toucher émule la souris : glisser-déposer et clics marchent pareil sur téléphone et PC.
+pointing/emulate_mouse_from_touch=true
+
+[rendering]
+
+; Rendu Compatibility : le plus large support sur téléphones (et export web possible).
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

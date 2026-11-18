@@ -1,0 +1,25 @@
+{
+  "_doc": "Réglages globaux, decks et rencontres. Modifier ici pour équilibrer sans toucher au code.",
+  "rules": {
+    "player_hp": 60,
+    "energy_per_turn": 3,
+    "hand_size": 5,
+    "script_slots": 3,
+    "overheat_threshold": 12,
+    "overheat_damage": 3,
+    "full_stack_draw": 1
+  },
+  "decks": {
+    "slice": [
+      "exploit", "exploit", "exploit", "exploit",
+      "blindage", "blindage", "blindage", "blindage",
+      "prechauffe",
+      "force_brute", "rafale",
+      "overclock", "decharge",
+      "brouilleur", "injection"
+    ]
+  },
+  "encounters": {
+    "slice": [ "agent_secu", "drone" ]
+  }
+}

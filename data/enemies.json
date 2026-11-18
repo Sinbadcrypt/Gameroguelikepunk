@@ -1,0 +1,16 @@
+{
+  "_doc": "Ennemis. pattern = intentions jouées en boucle, dans l'ordre. Chaque intention = liste d'actions : attack {amount, hits}, shield {amount}.",
+  "enemies": [
+    { "id": "agent_secu", "name": "Agent de sécurité", "hp": 24,
+      "pattern": [
+        [ { "type": "attack", "amount": 8 } ],
+        [ { "type": "shield", "amount": 6 }, { "type": "attack", "amount": 4 } ],
+        [ { "type": "attack", "amount": 12 } ]
+      ] },
+    { "id": "drone", "name": "Drone", "hp": 14,
+      "pattern": [
+        [ { "type": "attack", "amount": 4 } ],
+        [ { "type": "attack", "amount": 3, "hits": 2 } ]
+      ] }
+  ]
+}

@@ -115,14 +115,22 @@ class LinkTrace extends Control:
 class EnemyArt extends Control:
 	var kind := "agent_secu"
 	var color := Palette.symbol_color("intrusion")
+	var texture: Texture2D = null  # illustration (data/enemies.json > art), sinon silhouette
 
-	func _init(k: String = "agent_secu") -> void:
+	func _init(k: String = "agent_secu", art_path: String = "") -> void:
 		kind = k
+		if art_path != "" and ResourceLoader.exists(art_path):
+			texture = load(art_path)
 		custom_minimum_size = Vector2(0, 120)
 		size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	func _draw() -> void:
+		if texture:
+			# Image carrée, centrée, à la plus grande taille qui tient dans la zone.
+			var side: float = min(size.x, size.y)
+			draw_texture_rect(texture, Rect2((size - Vector2(side, side)) / 2.0, Vector2(side, side)), false)
+			return
 		var c := size / 2.0
 		var col := color
 		var glow := Color(col, 0.18)

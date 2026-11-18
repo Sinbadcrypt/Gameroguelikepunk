@@ -20,10 +20,10 @@ var _dead := false
 var _reticle_t := 0.0
 
 
-func setup(i: int, enemy_id: String, display_name: String, max_hp: int) -> EnemyView:
+func setup(i: int, enemy_id: String, display_name: String, max_hp: int, art_path: String = "") -> EnemyView:
 	index = i
 	enemy_name = display_name
-	custom_minimum_size = Vector2(300, 300)
+	custom_minimum_size = Vector2(300, 360)
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
@@ -48,8 +48,8 @@ func setup(i: int, enemy_id: String, display_name: String, max_hp: int) -> Enemy
 	_intent.autowrap_mode = TextServer.AUTOWRAP_OFF
 	bubble.add_child(_intent)
 
-	_art = HudWidgets.EnemyArt.new(enemy_id)
-	_art.custom_minimum_size = Vector2(0, 130)
+	_art = HudWidgets.EnemyArt.new(enemy_id, art_path)
+	_art.custom_minimum_size = Vector2(0, 200 if art_path != "" else 130)
 	v.add_child(_art)
 
 	var name_l := Label.new()

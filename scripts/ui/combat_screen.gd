@@ -69,6 +69,16 @@ func _build_ui() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
+	# Fond : rue cyberpunk floue, assombrie pour que l'interface reste lisible.
+	if ResourceLoader.exists("res://assets/art/background.jpg"):
+		var city := TextureRect.new()
+		city.texture = load("res://assets/art/background.jpg")
+		city.set_anchors_preset(Control.PRESET_FULL_RECT)
+		city.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		city.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		city.modulate = Color(0.55, 0.55, 0.62)
+		city.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(city)
 
 	_world = MarginContainer.new()
 	_world.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -100,7 +110,8 @@ func _build_ui() -> void:
 	col.add_child(enemies_row)
 	for i in engine.state["enemies"].size():
 		var e: Dictionary = engine.state["enemies"][i]
-		var ev := EnemyView.new().setup(i, e["id"], e["name"], int(e["max_hp"]))
+		var art: String = data.enemy(e["id"]).get("art", "")
+		var ev := EnemyView.new().setup(i, e["id"], e["name"], int(e["max_hp"]), art)
 		ev.selected.connect(_on_enemy_selected)
 		enemies_row.add_child(ev)
 		_enemy_views.append(ev)
